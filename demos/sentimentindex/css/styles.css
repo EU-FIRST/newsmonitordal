@@ -1,0 +1,8 @@
+body { background-color: lightgray; margin: 0; }
+.inner { width: 960px; margin-left: auto; margin-right: auto; background-color: white; padding: 25px; }
+.container { width: 1010px; }
+#chart_container { width: 960px; height: 500px; } 
+.input-append input { width: 80px; }
+.input-append { margin-top: 10px; }
+.add-on { cursor: pointer; }
+#controls { margin-left: 75px; text-align: right; }
