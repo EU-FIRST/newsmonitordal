@@ -39,12 +39,19 @@ $(".btn").click(function() {
 	$(this)[0].blur(); // fixes FF bug
 });
 
+// assign selection handlers
+$("select").change(function() {
+	$("select option:selected").each(function () {
+		load($(this).attr("value"));
+	});
+});
+
 function filter(data) {
 	var newData = [];
 	for (var i in data) {
 		if (data[i][0] >= MIN_DATE && data[i][0] <= MAX_DATE) {
 			var d = new Date(data[i][0]);
-			d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) + 43200000; // data point appear at midday
+			d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) + 43200000; // data point appears at midday
 			newData.push([d, data[i][1]]); 
 		}
 	}
