@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
-<link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>
-<link rel='stylesheet' type='text/css' href='css/bootstrap-datetimepicker.min.css'>
-<link rel='stylesheet' type='text/css' href='css/styles.css'>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+<title>DAX Sentiment Index 2012</title>
 </head>
 <body>
-<div class='container'>
-<div class='inner'>
+<div class="container">
+<div class="inner">
 <h1>DAX Sentiment Index 2012</h1>
-<div id='controls'>
-Zoom <div class="btn-group">
-	<button class="btn">1m</button>
-	<button class="btn">3m</button>
-	<button class="btn">6m</button>
-	<button class="btn">1y</button>
-	<button class="btn">All</button>
+<div id="controls">
+Zoom <div class="btn-group" data-toggle="buttons-radio">
+	<button id="1m" class="btn">1m</button>
+	<button id="3m" class="btn">3m</button>
+	<button id="6m" class="btn">6m</button>
+	<!--<button id="1y" class="btn">1y</button>-->
+	<button id="all" class="btn">All</button>
 </div>
-&nbsp; From <div id="datetimepickerFrom" class="input-append">
+&nbsp; From <div id="datepicker-from" class="input-append">
 	<input data-format="yyyy-MM-dd" type="text"></input>
 	<span class="add-on">
 		<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
 	</span>
 </div>
-&nbsp; To <div id="datetimepickerTo" class="input-append">
+&nbsp; To <div id="datepicker-to" class="input-append">
 	<input data-format="yyyy-MM-dd" type="text"></input>
 	<span class="add-on">
 		<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
 	</span>
 </div>
 </div>
-<div id="chart_container"></div>
-<div id="copyright" style="border: 1px solid red; text-align: center; margin-top: 50px;">&copy; 2013 Sowa Labs</div>
+<div id="chart-container"></div>
+<div id="copyright">&copy; 2013 Sowa Labs</div>
 </div>
 </div>
-<script src='js/jquery.js'></script>
-<script src='js/bootstrap.min.js'></script>
-<script src='js/highstock.js'></script>
-<script src='js/bootstrap-datetimepicker.min.js'></script>
-<script src='js/code.js'></script>
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/highstock.js"></script>
+<script src="js/bootstrap-datetimepicker.min.js"></script>
+<script src="js/code.js"></script>
 </body>
 </html>
