@@ -7,7 +7,7 @@ body { background-color: lightgray; margin: 0; }
 .add-on { cursor: pointer; }
 #controls { margin-left: 75px; text-align: right; margin-top: 40px; margin-right: 10px; }
 #controls #left { float: left; }
-#copyright { position: relative; margin-top: 50px; height: 100px; background: #ffffff url('../img/sowalabs.png') no-repeat center top; }
+#copyright { position: relative; margin-top: 50px; height: 100px; background: #ffffff url("../img/sowalabs.png") no-repeat center top; }
 #copyright div { position: absolute; width: 100%; text-align: center; bottom: 0; }
 h1 { text-align: center; } 
 .btn:focus { outline: none; }
