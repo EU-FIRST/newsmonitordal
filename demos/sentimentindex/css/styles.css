@@ -8,4 +8,4 @@ body { background-color: lightgray; margin: 0; }
 #controls { margin-left: 75px; text-align: right; margin-top: 40px; margin-right: 10px; }
 #copyright { margin-top: 50px; width: 960px; vertical-align: bottom; height: 100px; text-align: center; background-image: url('../img/sowalabs.png'); background-repeat: no-repeat; background-position: center top; }
 h1 { text-align: center; }
-.btn:focus { outline: none; background-position: 0 0; }
+.btn:focus { outline: none; }

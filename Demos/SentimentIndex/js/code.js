@@ -35,6 +35,8 @@ $(".btn").click(function() {
 	var dateStart = dateEnd - span;
 	if (dateStart < MIN_DATE) { dateEnd += (MIN_DATE - dateStart); dateStart += (MIN_DATE - dateStart); }
 	chart.xAxis[0].setExtremes(dateStart, dateEnd);
+}).focus(function() {
+	$(this)[0].blur(); // fixes FF bug
 });
 
 function filter(data) {
