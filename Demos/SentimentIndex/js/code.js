@@ -1,8 +1,8 @@
 var chart;
 var MIN_DATE 
-	= Date.UTC(2012, 0, 1); // Jan 1, 2012
+	= Date.UTC(2012, 0, 1, 12, 0); // Jan 1, 2012, 12:00
 var MAX_DATE 
-	= Date.UTC(2012, 11, 31, 12, 0); // Dec 31, 2012
+	= Date.UTC(2012, 11, 31, 12, 0); // Dec 31, 2012, 12:00
 var DAY_SPAN
 	= 86400000;
 
@@ -17,10 +17,6 @@ $("#datepicker-from,#datepicker-to").datetimepicker({
 	dateEnd = Math.max(MIN_DATE, Math.min(dateEnd, MAX_DATE));
 	chart.xAxis[0].setExtremes(dateStart, dateEnd);
 });
-
-// set initial time span
-$("#datepicker-from").data("datetimepicker").setDate(MIN_DATE);
-$("#datepicker-to").data("datetimepicker").setDate(MAX_DATE);
 
 // assign button handlers
 $(".btn").click(function() {
@@ -49,7 +45,7 @@ $("select").change(function() {
 function filter(data) {
 	var newData = [];
 	for (var i in data) {
-		if (data[i][0] >= MIN_DATE && data[i][0] <= MAX_DATE) {
+		if (data[i][0] >= MIN_DATE - DAY_SPAN / 2 && data[i][0] <= MAX_DATE) {
 			var d = new Date(data[i][0]);
 			d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) + 43200000; // data point appears at midday
 			newData.push([d, data[i][1]]); 
@@ -59,6 +55,10 @@ function filter(data) {
 }
 
 function load(name) {
+	// set initial time span
+	$("#datepicker-from").data("datetimepicker").setDate(MIN_DATE);
+	$("#datepicker-to").data("datetimepicker").setDate(MAX_DATE);
+	$("#all").button("toggle");
 	$.getJSON("http://first-vm4.ijs.si/first_occurrence/data/?label=" + name + "&callback=?&w=1", function(volume) {
 		$.getJSON("http://first-vm4.ijs.si/first_sentiment/data/?scope=document&aggregation=sum&label=" + name + "&callback=?&w=1", function(sentiment) {
 			chart = new Highcharts.StockChart({
