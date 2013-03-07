@@ -1,15 +1,19 @@
 body { background-color: lightgray; margin: 0; }
 .inner { width: 960px; margin-left: auto; margin-right: auto; background-color: white; padding: 25px; }
 .container { width: 1010px; }
-#chart-container { width: 960px; height: 500px; } 
-.input-append input { width: 80px; }
-.input-append { margin-top: 10px; }
-.add-on { cursor: pointer; }
-select:focus { outline: none; }
-#controls { margin-left: 74px; text-align: right; margin-top: 40px; margin-right: 10px; }
-#controls #left { float: left; margin-top: 10px; }
+h1 { text-align: center; margin-bottom: 40px; } 
+.controls { margin-left: 74px; text-align: right; margin-right: 10px; padding-top: 8px; padding-bottom: 8px; }
+.controls .left { float: left; }
+#chart-container { width: 960px; height: 500px; margin-top: 10px; } 
 #copyright { position: relative; margin-top: 50px; height: 100px; background: #ffffff url("../img/sowalabs.png") no-repeat center top; }
 #copyright div { position: absolute; width: 100%; text-align: center; bottom: 0; }
-h1 { text-align: center; } 
+
 .btn:focus { outline: none; }
+select:focus { outline: none; }
+
 select { margin: 0; }
+.input-append { margin: 0; }
+
+.add-on { cursor: pointer; }
+
+.input-append input { width: 80px; }

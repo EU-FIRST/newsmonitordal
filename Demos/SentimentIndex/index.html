@@ -11,34 +11,46 @@
 <div class="container">
 <div class="inner">
 <h1>DAX Sentiment Index 2012</h1>
-<div id="controls">
-<div id="left">
-	<select>
-		<option value="4922" selected>DAX</option> 
-		<option value="771">Siemens</option> 
-	</select>
+<div class="controls">
+	<div class="left">
+		<select style="margin-top: -2px;">
+			<option value="4922" selected>DAX</option> 
+			<option value="771">Siemens</option> 
+		</select>
+	</div>
+	<div class="right">
+		Zoom <div id="zoom" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		<button id="1m" class="btn">1m</button>
+		<button id="3m" class="btn">3m</button>
+		<button id="6m" class="btn">6m</button>
+		<button id="all" class="btn">All</button>
+		</div>&nbsp; From <div id="datepicker-from" class="input-append" style="margin-top: -2px;">
+		<input data-format="yyyy-MM-dd" type="text">
+		<span class="add-on">
+			<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+		</span>
+		</div>&nbsp; To <div id="datepicker-to" class="input-append" style="margin-top: -2px;">
+		<input data-format="yyyy-MM-dd" type="text">
+		<span class="add-on">
+			<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+		</span>
+		</div>
+	</div>
 </div>
-<div id="right">
-Zoom <div class="btn-group" data-toggle="buttons-radio">
-	<button id="1m" class="btn">1m</button>
-	<button id="3m" class="btn">3m</button>
-	<button id="6m" class="btn">6m</button>
-	<!--<button id="1y" class="btn">1y</button>-->
-	<button id="all" class="btn">All</button>
-</div>
-&nbsp; From <div id="datepicker-from" class="input-append">
-	<input data-format="yyyy-MM-dd" type="text">
-	<span class="add-on">
-		<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-	</span>
-</div>
-&nbsp; To <div id="datepicker-to" class="input-append">
-	<input data-format="yyyy-MM-dd" type="text">
-	<span class="add-on">
-		<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-	</span>
-</div>
-</div>
+<div class="controls">
+	<div class="left">
+		Upper chart <div id="upper-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		<button id="1m" class="btn active">Occurrence</button>
+		<button id="3m" class="btn">Stock price</button>
+		</div>
+	</div>
+	<div class="right">
+		Lower chart overlay <div id="lower-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		<button id="1m" class="btn active">None</button>
+		<button id="3m" class="btn">7-day avg</button>
+		<button id="6m" class="btn">14-day avg</button>
+		</div>
+	</div>
 </div>
 <div id="chart-container"></div>
 <div id="copyright"><div>&copy; 2013 Sowa Labs</div></div>

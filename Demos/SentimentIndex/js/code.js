@@ -19,19 +19,20 @@ $("#datepicker-from,#datepicker-to").datetimepicker({
 });
 
 // assign button handlers
-$(".btn").click(function() {
+$("#zoom .btn").click(function() {
 	var action = $(this)[0].textContent;
 	var span;
 	var dateEnd = chart.xAxis[0].getExtremes().max;
 	if (action == "All") { chart.xAxis[0].setExtremes(MIN_DATE, MAX_DATE); return; }
-	else if (action == "1y") { span = 365 * DAY_SPAN; }
 	else if (action == "1m") { span = 30 * DAY_SPAN; }
 	else if (action == "3m") { span = 90 * DAY_SPAN; }
 	else if (action == "6m") { span = 180 * DAY_SPAN; }
 	var dateStart = dateEnd - span;
 	if (dateStart < MIN_DATE) { dateEnd += (MIN_DATE - dateStart); dateStart += (MIN_DATE - dateStart); }
 	chart.xAxis[0].setExtremes(dateStart, dateEnd);
-}).focus(function() {
+});
+
+$(".btn").focus(function() {
 	$(this)[0].blur(); // fixes FF bug
 });
 
@@ -79,7 +80,7 @@ function load(name) {
 							$("#datepicker-to").data("datetimepicker").setDate(event.max);
 							if (Math.abs(event.max - event.min - chart.span) >= 2 * DAY_SPAN) {
 								chart.span = event.max - event.min;
-								$(".btn-group button").removeClass("active");
+								$("#zoom button").removeClass("active");
 							}
 						}
 					}
