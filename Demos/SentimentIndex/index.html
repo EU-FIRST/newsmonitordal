@@ -12,13 +12,13 @@
 <div class="inner">
 <h1>DAX Sentiment Index 2012</h1>
 <div class="controls">
-	<div class="left">
-		<select style="margin-top: -2px;">
-			<option value="4922" selected>DAX</option> 
+	<div class="controls-left">
+		Entity <select id="entity" style="margin-top: -2px;">
+			<option value="4922" selected="selected">DAX</option> 
 			<option value="771">Siemens</option> 
 		</select>
 	</div>
-	<div class="right">
+	<div class="controls-right">
 		Zoom <div id="zoom" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
 		<button id="1m" class="btn">1m</button>
 		<button id="3m" class="btn">3m</button>
@@ -38,17 +38,17 @@
 	</div>
 </div>
 <div class="controls">
-	<div class="left">
+	<div class="controls-left">
 		Upper chart <div id="upper-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
-		<button id="1m" class="btn active">Occurrence</button>
-		<button id="3m" class="btn">Stock price</button>
+		<button id="occurrence" class="btn active">Occurrence</button>
+		<button id="price" class="btn">Stock price</button>
 		</div>
 	</div>
-	<div class="right">
+	<div class="controls-right">
 		Lower chart overlay <div id="lower-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
-		<button id="1m" class="btn active">None</button>
-		<button id="3m" class="btn">7-day avg</button>
-		<button id="6m" class="btn">14-day avg</button>
+		<button id="none" class="btn active">None</button>
+		<button id="7-day-avg" class="btn">7-day avg</button>
+		<button id="14-day-avg" class="btn">14-day avg</button>
 		</div>
 	</div>
 </div>
