@@ -73,8 +73,8 @@ $("#zoom .btn").click(function() {
 $("#lower-chart .btn").click(function() {
 	var action = $(this).attr("id");
 	if (action == "none") {
-		//for (var i in chart.series[2].data) { chart.series[2].data[i].update(chart.series[1].data[i].y, false); } 
-		//chart.redraw();
+		for (var i in chart.series[2].data) { chart.series[2].data[i].update(chart.series[1].data[i].y, false); } 
+		chart.redraw();
 		chart.series[2].setVisible(false, true);
 	}
 	else { 
@@ -105,6 +105,7 @@ function load(name) {
 	$("#occurrence").button("toggle");
 	$.getJSON("http://first-vm4.ijs.si/first_occurrence/data/?label=" + name + "&callback=?&w=1", function(volume) {
 		$.getJSON("http://first-vm4.ijs.si/first_sentiment/data/?scope=document&aggregation=sum&label=" + name + "&callback=?&w=1", function(sentiment) {
+			var defaultFont = "12px 'Helvetica Neue',Helvetica,Arial,sans-serif";
 			chart = new Highcharts.StockChart({
 				credits: { 
 					enabled: false 
@@ -116,6 +117,16 @@ function load(name) {
 				rangeSelector: { 
 					enabled: false
 				},
+				navigator: {
+					xAxis: {
+						labels: {
+							style: {
+								font: defaultFont,
+								color: "#000"
+							}
+						}
+					}
+				},
 				xAxis: {
 					events: {
 						setExtremes: function(event) {
@@ -126,20 +137,33 @@ function load(name) {
 								$("#zoom button").removeClass("active");
 							}
 						}
+					},
+					lineColor: "silver",
+					tickColor: "silver",
+					labels: {
+						style: {
+							font: defaultFont,
+							color: "#000"
+						}
 					}
 				},
 				yAxis: [{
 					title: {
+						style: {
+							font: defaultFont,
+							color: "#000"
+						},
 						text: "Occurrence"
 					},
 					min: 0,
 					maxPadding: 0,
 					labels: {
 						align: "right",
+						style: {
+							font: defaultFont,
+							color: "#000"
+						},
 						x: -5,
-						formatter: function() {
-							return (this.value > 0 ? "+" : "") + this.value;
-						}
 					},
 					plotLines: [{
 						value: 0,
@@ -147,17 +171,26 @@ function load(name) {
 						color: "silver"
 					}],
 					height: 200,
-					lineWidth: 2
+					lineWidth: 2,
+					lineColor: "silver"
 				},
 				{
 					title: {
+						style: {
+							font: defaultFont,
+							color: "#000"
+						},
 						text: "Sentiment"
 					},
 					maxPadding: 0,
 					minPadding: 0,
 					alignTicks: false,
-					labels:{
+					labels: {
 						align: "right",
+						style: {
+							font: defaultFont,
+							color: "#000"
+						},
 						x: -5,
 						formatter: function () {
 							return (this.value > 0 ? "+" : "") + this.value;
@@ -171,7 +204,8 @@ function load(name) {
 					top: 250,
 					height: 150,
 					offset: 0,
-					lineWidth: 2
+					lineWidth: 2,
+					lineColor: "silver"
 				}],
 				series: [{
 					name: "Occurrence", 
