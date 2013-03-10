@@ -4,13 +4,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+<!-- comment-out the following two lines to rmv responsive -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css">
 <link rel="stylesheet" type="text/css" href="css/styles.css">
 <title>DAX Sentiment Index 2012</title>
 </head>
 <body>
 <div class="container">
-<div class="inner">
 <h1>DAX Sentiment Index 2012</h1>
+<div class="alert alert-info">
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	<p><b>This demo shows</b> the sentiment attributed to DAX and its constituents in Web news and blogs.</p>
+	<p>Blah blah ...</p>
+</div>
 <div class="controls">
 	<div class="controls-left">
 		Entity <select id="entity" style="margin-top: -2px;">
@@ -54,7 +61,6 @@
 </div>
 <div id="chart-container"></div>
 <div id="copyright"><div>&copy; 2013 Sowa Labs</div></div>
-</div>
 </div>
 <script src="js/jquery.js"></script>
 <script src="js/bootstrap.min.js"></script>
