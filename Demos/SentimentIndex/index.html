@@ -15,28 +15,39 @@
 <h1>DAX Sentiment Index 2012</h1>
 <div class="alert alert-info">
 	<button type="button" class="close" data-dismiss="alert">&times;</button>
-	<p><b>This demo shows</b> the sentiment attributed to DAX and its constituents in Web news and blogs.</p>
-	<p>Blah blah ...</p>
+	<p><b>This demo shows</b> the sentiment attributed to DAX and its constituents in Web news and blogs through time.</p>
+	<p>Follow these steps to customize the view:</p>
+	<ol>
+		<li>Select the entity of interest (either DAX or one of its constituents).</li>
+		<li>Select what should be displayed in the upper chart:</li>
+		<ul>
+			<li>Occurrence: ...</li>
+			<li>Stock price: the daily closing prices of the selected entity.</li>
+		</ul>
+	</ol>
 </div>
+<div class="loading-container">
+<div class="loading-curtain"></div>
+<img class="loading-img" src="img/loading.gif">
 <div class="controls">
 	<div class="controls-left">
-		Entity <select id="entity" style="margin-top: -2px;">
+		Entity <select id="entity" class="fixpos" style="margin-top: -2px;">
 			<option value="4922" selected="selected">DAX</option> 
 			<option value="771">Siemens</option> 
 		</select>
 	</div>
 	<div class="controls-right">
-		Zoom <div id="zoom" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		Zoom <div id="zoom" class="btn-group fixpos" data-toggle="buttons-radio" style="margin-top: -2px;">
 		<button id="1m" class="btn">1m</button>
 		<button id="3m" class="btn">3m</button>
 		<button id="6m" class="btn">6m</button>
 		<button id="all" class="btn">All</button>
-		</div>&nbsp; From <div id="datepicker-from" class="input-append" style="margin-top: -2px;">
+		</div>&nbsp; From <div id="datepicker-from" class="input-append fixpos" style="margin-top: -2px;">
 		<input data-format="yyyy-MM-dd" type="text">
 		<span class="add-on">
 			<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
 		</span>
-		</div>&nbsp; To <div id="datepicker-to" class="input-append" style="margin-top: -2px;">
+		</div>&nbsp; To <div id="datepicker-to" class="input-append fixpos" style="margin-top: -2px;">
 		<input data-format="yyyy-MM-dd" type="text">
 		<span class="add-on">
 			<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
@@ -46,13 +57,13 @@
 </div>
 <div class="controls">
 	<div class="controls-left">
-		Upper chart <div id="upper-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		Upper chart <div id="upper-chart" class="btn-group fixpos" data-toggle="buttons-radio" style="margin-top: -2px;">
 		<button id="occurrence" class="btn active">Occurrence</button>
 		<button id="price" class="btn">Stock price</button>
 		</div>
 	</div>
 	<div class="controls-right">
-		Lower chart overlay <div id="lower-chart" class="btn-group" data-toggle="buttons-radio" style="margin-top: -2px;">
+		Lower chart overlay <div id="lower-chart" class="btn-group fixpos" data-toggle="buttons-radio" style="margin-top: -2px;">
 		<button id="none" class="btn active">None</button>
 		<button id="7-day-avg" class="btn">7-day avg</button>
 		<button id="14-day-avg" class="btn">14-day avg</button>
@@ -60,6 +71,7 @@
 	</div>
 </div>
 <div id="chart-container"></div>
+</div>
 <div id="copyright"><div>&copy; 2013 Sowa Labs</div></div>
 </div>
 <script src="js/jquery.js"></script>

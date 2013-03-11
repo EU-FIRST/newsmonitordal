@@ -18,3 +18,7 @@ select { margin: 0; }
 .add-on { cursor: pointer; }
 
 .input-append input { width: 80px; }
+
+.loading-container { position: relative; }
+.loading-curtain { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: white; z-index: 999; opacity: 0.8; display: none; }
+.loading-img { position: absolute; z-index: 1000; left: 50%; margin-left: -16px; top: 50%; margin-top: -16px; display: none; }

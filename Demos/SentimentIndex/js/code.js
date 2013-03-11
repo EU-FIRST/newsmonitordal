@@ -35,6 +35,14 @@ function MA(data, days) {
 	return maData;
 }
 
+function showLoading() {
+	$(".loading-curtain,.loading-img").show();
+}
+
+function hideLoading() {
+	$(".loading-curtain,.loading-img").hide();
+}
+
 // initialize buttons
 $(".btn")/*.button()*/.focus(function() {
 	$(this)[0].blur(); // fixes FF focus bug
@@ -91,6 +99,7 @@ $("#upper-chart .btn").click(function() {
 
 // assign selection handler !!!!!
 $("select").change(function() {
+	$(this)[0].blur(); // rmv ugly focus rectangle
 	$("select option:selected").each(function () {
 		load($(this).attr("value"));
 	});
@@ -98,6 +107,7 @@ $("select").change(function() {
 
 function load(name) {
 	// set initial time span
+	showLoading();
 	$("#datepicker-from").data("datetimepicker").setDate(MIN_DATE);
 	$("#datepicker-to").data("datetimepicker").setDate(MAX_DATE);
 	$("#all").button("toggle");
@@ -251,6 +261,7 @@ function load(name) {
 				}
 			});
 			chart.span = MAX_DATE - MIN_DATE;
+			hideLoading();
 		});
 	});
 }
