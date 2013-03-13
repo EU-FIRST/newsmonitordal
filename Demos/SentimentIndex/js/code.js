@@ -5,14 +5,37 @@ var MAX_DATE
 	= Date.UTC(2012, 11, 31); // Dec 31, 2012
 var DAY_SPAN
 	= 86400000;
+var FONT
+	= "12px 'Helvetica Neue',Helvetica,Arial,sans-serif";
+var VOL_IDX 
+	= 0; 
+var PRICE_IDX 
+	= 1;
+var SENT_IDX 
+	= 2; 
+var MA_IDX 
+	= 3;
 
 function filter(data) {
 	var newData = [];
 	for (var i in data) {
-		if (data[i][0] >= MIN_DATE && data[i][0] <= MAX_DATE + DAY_SPAN / 2) {
+		if (data[i][0] >= MIN_DATE && data[i][0] <= MAX_DATE + DAY_SPAN / 3 * 2) {
 			var d = new Date(data[i][0]);
 			d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); 
 			newData.push([d, data[i][1]]); 
+		}
+	}
+	return newData;
+}
+
+function align(data, refData) {
+	var newData = [];
+	var v = null;
+	for (var i in refData) {
+		if (data[refData[i][0]]) {
+			newData.push([refData[i][0], v = data[refData[i][0]]]);
+		} else {
+			newData.push([refData[i][0], v]);
 		}
 	}
 	return newData;
@@ -36,7 +59,7 @@ function MA(data, days) {
 }
 
 // initialize buttons
-$(".btn")/*.button()*/.focus(function() {
+$(".btn").focus(function() {
 	$(this)[0].blur(); // fixes FF focus bug
 });
 
@@ -73,20 +96,31 @@ $("#zoom .btn").click(function() {
 $("#lower-chart .btn").click(function() {
 	var action = $(this).attr("id");
 	if (action == "none") {
-		for (var i in chart.series[2].data) { chart.series[2].data[i].update(chart.series[1].data[i].y, false); } 
+		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(chart.series[SENT_IDX].data[i].y, false); } 
 		chart.redraw();
-		chart.series[2].setVisible(false, true);
+		chart.series[MA_IDX].setVisible(false, true);
 	}
 	else { 
-		var data = MA(chart.series[1].data, action == "7-day-avg" ? 7 : 14);
-		for (var i in chart.series[2].data) { chart.series[2].data[i].update(data[i], false); }
-		chart.series[2].setVisible(true, true);
+		var data = MA(chart.series[SENT_IDX].data, action == "7-day-avg" ? 7 : 14);
+		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(data[i], false); }
+		chart.series[MA_IDX].setVisible(true, true);
 	}
 });
 
+// assign upper-chart button handlers
 $("#upper-chart .btn").click(function() {
 	var action = $(this).attr("id");
-	console.log(action);
+	if (action == "price") {
+		chart.series[VOL_IDX].setVisible(false, false);
+		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: null, title: { text: "Stock price", style: { font: FONT, color: "#000" } } }));
+		chart.yAxis[0].setTitle(); // wtf?!
+		chart.series[PRICE_IDX].setVisible(true, true);
+	} else {
+		chart.series[PRICE_IDX].setVisible(false, false);
+		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: 0, title: { text: "Occurrence", style: { font: FONT, color: "#000" } } }));
+		chart.yAxis[0].setTitle(); // wtf?!
+		chart.series[VOL_IDX].setVisible(true, true);
+	}
 });
 
 // assign selection handler !!!!!
@@ -107,10 +141,12 @@ function load(name) {
 	$("#occurrence").button("toggle");
 	$.getJSON("volume/" + name + ".txt", function(volume) {
 	//$.getJSON("http://first-vm4.ijs.si/first_occurrence/data/?label=" + name + "&callback=?&w=1", function(volume) {
+		volume = filter(volume);
 		$.getJSON("sentiment/" + name + ".txt", function(sentiment) {
 		//$.getJSON("http://first-vm4.ijs.si/first_sentiment/data/?scope=document&aggregation=sum&label=" + name + "&callback=?&w=1", function(sentiment) {
+			sentiment = filter(sentiment);
 			$.getJSON("price/" + name + ".txt", function(price) {
-				var font = "12px 'Helvetica Neue',Helvetica,Arial,sans-serif";
+				price = align(price, volume);
 				chart = new Highcharts.StockChart({
 					credits: { 
 						enabled: false 
@@ -126,7 +162,7 @@ function load(name) {
 						xAxis: {
 							labels: {
 								style: {
-									font: font,
+									font: FONT,
 									color: "#000"
 								}
 							}
@@ -147,7 +183,7 @@ function load(name) {
 						tickColor: "silver",
 						labels: {
 							style: {
-								font: font,
+								font: FONT,
 								color: "#000"
 							}
 						}
@@ -155,7 +191,7 @@ function load(name) {
 					yAxis: [{
 						title: {
 							style: {
-								font: font,
+								font: FONT,
 								color: "#000"
 							},
 							text: "Occurrence"
@@ -165,7 +201,7 @@ function load(name) {
 						labels: {
 							align: "right",
 							style: {
-								font: font,
+								font: FONT,
 								color: "#000"
 							},
 							x: -5,
@@ -182,7 +218,7 @@ function load(name) {
 					{
 						title: {
 							style: {
-								font: font,
+								font: FONT,
 								color: "#000"
 							},
 							text: "Sentiment"
@@ -193,7 +229,7 @@ function load(name) {
 						labels: {
 							align: "right",
 							style: {
-								font: font,
+								font: FONT,
 								color: "#000"
 							},
 							x: -5,
@@ -215,7 +251,19 @@ function load(name) {
 					series: [{
 						name: "Occurrence", 
 						lineWidth: 1,
-						data: filter(volume),
+						data: volume,
+						states: {
+							hover: {
+								lineWidth: 1
+							}
+						}
+					},
+					{
+						name: "Stock price", 
+						lineWidth: 1,
+						data: price,
+						visible: false,
+						color: "#4572A7",
 						states: {
 							hover: {
 								lineWidth: 1
@@ -226,7 +274,7 @@ function load(name) {
 						name: "Sentiment", 
 						yAxis: 1,
 						lineWidth: 1,
-						data: filter(sentiment),
+						data: sentiment,
 						states: {
 							hover: {
 								lineWidth: 1
@@ -236,7 +284,7 @@ function load(name) {
 					{
 						name: "MA", 
 						yAxis: 1,
-						data: filter(sentiment),
+						data: sentiment,
 						visible: false,
 						lineWidth: 1,
 						color: "#000",
