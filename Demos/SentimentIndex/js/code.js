@@ -58,78 +58,9 @@ function MA(data, days) {
 	return maData;
 }
 
-// initialize buttons
-$(".btn").focus(function() {
-	$(this)[0].blur(); // fixes FF focus bug
-});
-
-// initialize selection box
-$("#entity").val("DAX");
-
-// initialize date pickers
-$("#datepicker-from,#datepicker-to").datetimepicker({
-	pickTime: false
-}).on("changeDate", function(e) {
-	var dateStart = $("#datepicker-from").data("datetimepicker").getDate().getTime();
-	var dateEnd = $("#datepicker-to").data("datetimepicker").getDate().getTime();
-	if (dateEnd < dateStart) { dateEnd = dateStart; }
-	dateStart = Math.max(MIN_DATE, Math.min(dateStart, MAX_DATE));
-	dateEnd = Math.max(MIN_DATE, Math.min(dateEnd, MAX_DATE));
-	chart.xAxis[0].setExtremes(dateStart, dateEnd);
-});
-
-// assign zoom button handlers
-$("#zoom .btn").click(function() {
-	var action = $(this).attr("id");
-	var span;
-	var dateEnd = chart.xAxis[0].getExtremes().max;
-	if (action == "all") { chart.xAxis[0].setExtremes(MIN_DATE, MAX_DATE); return; }
-	else if (action == "1m") { span = 30 * DAY_SPAN; }
-	else if (action == "3m") { span = 90 * DAY_SPAN; }
-	else if (action == "6m") { span = 180 * DAY_SPAN; }
-	var dateStart = dateEnd - span;
-	if (dateStart < MIN_DATE) { dateEnd += (MIN_DATE - dateStart); dateStart += (MIN_DATE - dateStart); }
-	chart.xAxis[0].setExtremes(dateStart, dateEnd);
-});
-
-// assign MA button handlers
-$("#lower-chart .btn").click(function() {
-	var action = $(this).attr("id");
-	if (action == "none") {
-		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(chart.series[SENT_IDX].data[i].y, false); } 
-		chart.redraw();
-		chart.series[MA_IDX].setVisible(false, true);
-	}
-	else { 
-		var data = MA(chart.series[SENT_IDX].data, action == "7-day-avg" ? 7 : 14);
-		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(data[i], false); }
-		chart.series[MA_IDX].setVisible(true, true);
-	}
-});
-
-// assign upper-chart button handlers
-$("#upper-chart .btn").click(function() {
-	var action = $(this).attr("id");
-	if (action == "price") {
-		chart.series[VOL_IDX].setVisible(false, false);
-		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: null, title: { text: "Stock price", style: { font: FONT, color: "#000" } } }));
-		chart.yAxis[0].setTitle(); // wtf?!
-		chart.series[PRICE_IDX].setVisible(true, true);
-	} else {
-		chart.series[PRICE_IDX].setVisible(false, false);
-		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: 0, title: { text: "Occurrence", style: { font: FONT, color: "#000" } } }));
-		chart.yAxis[0].setTitle(); // wtf?!
-		chart.series[VOL_IDX].setVisible(true, true);
-	}
-});
-
-// assign selection handler !!!!!
-$("select").change(function() {
-	$(this)[0].blur(); // rmv ugly focus rectangle
-	$("select option:selected").each(function () {
-		load($(this).attr("value"));
-	});
-});
+function error() {
+	$(".loading-img").hide(); $(".loading-oops").show();
+}
 
 function load(name) {
 	// set initial time span
@@ -305,9 +236,83 @@ function load(name) {
 				});
 				chart.span = MAX_DATE - MIN_DATE;
 				$(".loading-curtain,.loading-img").hide();
-			});
-		});
-	});
+			}).error(error);
+		}).error(error);
+	}).error(error);
 }
 
+// initialize buttons
+$(".btn").focus(function() {
+	$(this)[0].blur(); // fixes FF focus bug
+});
+
+// initialize selection box
+$("#entity").val("DAX");
+
+// initialize date pickers
+$("#datepicker-from,#datepicker-to").datetimepicker({
+	pickTime: false
+}).on("changeDate", function(e) {
+	var dateStart = $("#datepicker-from").data("datetimepicker").getDate().getTime();
+	var dateEnd = $("#datepicker-to").data("datetimepicker").getDate().getTime();
+	if (dateEnd < dateStart) { dateEnd = dateStart; }
+	dateStart = Math.max(MIN_DATE, Math.min(dateStart, MAX_DATE));
+	dateEnd = Math.max(MIN_DATE, Math.min(dateEnd, MAX_DATE));
+	chart.xAxis[0].setExtremes(dateStart, dateEnd);
+});
+
+// assign zoom button handlers
+$("#zoom .btn").click(function() {
+	var action = $(this).attr("id");
+	var span;
+	var dateEnd = chart.xAxis[0].getExtremes().max;
+	if (action == "all") { chart.xAxis[0].setExtremes(MIN_DATE, MAX_DATE); return; }
+	else if (action == "1m") { span = 30 * DAY_SPAN; }
+	else if (action == "3m") { span = 90 * DAY_SPAN; }
+	else if (action == "6m") { span = 180 * DAY_SPAN; }
+	var dateStart = dateEnd - span;
+	if (dateStart < MIN_DATE) { dateEnd += (MIN_DATE - dateStart); dateStart += (MIN_DATE - dateStart); }
+	chart.xAxis[0].setExtremes(dateStart, dateEnd);
+});
+
+// assign MA button handlers
+$("#lower-chart .btn").click(function() {
+	var action = $(this).attr("id");
+	if (action == "none") {
+		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(chart.series[SENT_IDX].data[i].y, false); } 
+		chart.redraw();
+		chart.series[MA_IDX].setVisible(false, true);
+	}
+	else { 
+		var data = MA(chart.series[SENT_IDX].data, action == "7-day-avg" ? 7 : 14);
+		for (var i in chart.series[MA_IDX].data) { chart.series[MA_IDX].data[i].update(data[i], false); }
+		chart.series[MA_IDX].setVisible(true, true);
+	}
+});
+
+// assign upper-chart button handlers
+$("#upper-chart .btn").click(function() {
+	var action = $(this).attr("id");
+	if (action == "price") {
+		chart.series[VOL_IDX].setVisible(false, false);
+		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: null, title: { text: "Stock price", style: { font: FONT, color: "#000" } } }));
+		chart.yAxis[0].setTitle(); // wtf?!
+		chart.series[PRICE_IDX].setVisible(true, true);
+	} else {
+		chart.series[PRICE_IDX].setVisible(false, false);
+		chart.yAxis[0].setOptions($.extend({}, chart.yAxis[0].options, { min: 0, title: { text: "Occurrence", style: { font: FONT, color: "#000" } } }));
+		chart.yAxis[0].setTitle(); // wtf?!
+		chart.series[VOL_IDX].setVisible(true, true);
+	}
+});
+
+// assign selection handler !!!!!
+$("select").change(function() {
+	$(this)[0].blur(); // rmv ugly focus rectangle
+	$("select option:selected").each(function () {
+		load($(this).attr("value"));
+	});
+});
+
+// initialize
 load("4922"); // DAX

@@ -12,7 +12,7 @@ h1 { text-align: center; margin-bottom: 30px; margin-top: 30px; }
 .btn:focus { outline: none; }
 select:focus { outline: none; }
 
-select { margin: 0; }
+select { margin: 0; width: 180px; }
 .input-append { margin: 0; }
 
 .add-on { cursor: pointer; }
@@ -22,3 +22,4 @@ select { margin: 0; }
 .loading-container { position: relative; }
 .loading-curtain { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: white; z-index: 999; opacity: 0.8; display: none; }
 .loading-img { position: absolute; z-index: 1000; left: 50%; margin-left: -16px; top: 50%; margin-top: -16px; display: none; }
+.loading-oops { position: absolute; width: 100%; text-align: center; z-index: 1000; line-height: 50px; top: 50%; margin-top: -25px; display: none; }
