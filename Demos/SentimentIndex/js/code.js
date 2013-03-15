@@ -199,6 +199,9 @@ function load(name) {
 							hover: {
 								lineWidth: 1
 							}
+						},
+						marker: { 
+							symbol: "circle" 
 						}
 					},
 					{
@@ -228,9 +231,13 @@ function load(name) {
 					}],
 					tooltip: {
 						formatter: function() {
-							return Highcharts.dateFormat("%a, %b %d, %Y", this.x) + "<br/>" +
-								"<span style=\"color:" + this.points[0].series.color + "\">Occurrence</span>: <b>" + this.points[0].y + "</b><br/>" +
-								"<span style=\"color:" + this.points[1].series.color + "\">Sentiment</span>: <b>" + this.points[1].y.toFixed(2) + "</b>";
+							var tooltip = Highcharts.dateFormat("%a, %b %d, %Y", this.x) + 
+								"<br/><span style=\"color:" + this.points[0].series.color + "\">" + this.points[0].series.name + "</span>: <b>" + this.points[0].y + "</b>" +
+								"<br/><span style=\"color:" + this.points[1].series.color + "\">Sentiment</span>: <b>" + this.points[1].y.toFixed(2) + "</b>";
+							if (this.points[2]) {
+								tooltip += "<br/><span style=\"color:" + this.points[2].series.color + "\">Sentiment MA</span>: <b>" + this.points[2].y.toFixed(2) + "</b>";
+							}
+							return tooltip;
 						}
 					}
 				});
@@ -315,4 +322,4 @@ $("select").change(function() {
 });
 
 // initialize
-load("4922"); // DAX
+load("GDAXI"); // DAX
