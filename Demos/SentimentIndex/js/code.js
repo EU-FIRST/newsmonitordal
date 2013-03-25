@@ -16,12 +16,20 @@ var SENT_IDX
 var MA_IDX 
 	= 3;
 
+function dateOnly(ms) {
+	var d = new Date(ms);
+	return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function numFmt(num, d) {
+	return Highcharts.numberFormat(num, d).replace("-", "−");
+}
+
 function filter(data) {
 	var newData = [];
 	for (var i in data) {
 		if (data[i][0] >= MIN_DATE && data[i][0] <= MAX_DATE + DAY_SPAN / 3 * 2) {
-			var d = new Date(data[i][0]);
-			d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); 
+			var d = dateOnly(data[i][0]);
 			newData.push([d, data[i][1]]); 
 		}
 	}
@@ -71,10 +79,8 @@ function load(name) {
 	$("#none").button("toggle");
 	$("#occurrence").button("toggle");
 	$.getJSON("volume/" + name + ".txt", function(volume) {
-	//$.getJSON("http://first-vm4.ijs.si/first_occurrence/data/?label=" + name + "&callback=?&w=1", function(volume) {
 		volume = filter(volume);
 		$.getJSON("sentiment/" + name + ".txt", function(sentiment) {
-		//$.getJSON("http://first-vm4.ijs.si/first_sentiment/data/?scope=document&aggregation=sum&label=" + name + "&callback=?&w=1", function(sentiment) {
 			sentiment = filter(sentiment);
 			$.getJSON("price/" + name + ".txt", function(price) {
 				price = align(price, volume);
@@ -102,8 +108,8 @@ function load(name) {
 					xAxis: {
 						events: {
 							setExtremes: function(event) {
-								$("#datepicker-from").data("datetimepicker").setDate(event.min);
-								$("#datepicker-to").data("datetimepicker").setDate(event.max);
+								$("#datepicker-from").data("datetimepicker").setDate(dateOnly(event.min));
+								$("#datepicker-to").data("datetimepicker").setDate(dateOnly(event.max));
 								if (Math.abs(event.max - event.min - chart.span) >= 2 * DAY_SPAN) {
 									chart.span = event.max - event.min;
 									$("#zoom button").removeClass("active");
@@ -165,7 +171,7 @@ function load(name) {
 							},
 							x: -5,
 							formatter: function () {
-								return (this.value > 0 ? "+" : "") + this.value;
+								return (this.value > 0 ? "+" : "") + numFmt(this.value, 0);
 							}
 						},
 						plotLines:[{
@@ -230,14 +236,15 @@ function load(name) {
 						}
 					}],
 					tooltip: {
+						useHTML: true,
 						formatter: function() {
-							var tooltip = Highcharts.dateFormat("%a, %b %d, %Y", this.x) + 
-								"<br/><span style=\"color:" + this.points[0].series.color + "\">" + this.points[0].series.name + "</span>: <b>" + this.points[0].y + "</b>" +
-								"<br/><span style=\"color:" + this.points[1].series.color + "\">Sentiment</span>: <b>" + this.points[1].y.toFixed(2) + "</b>";
+							var tooltip = "<span style=\"font-family:'Helvetica Neue',Helvetica,Arial,sans-serif\">" + Highcharts.dateFormat("%a, %b %e, %Y", this.x) + 
+								"<br/><span style=\"color:" + this.points[0].series.color + "\">" + this.points[0].series.name + "</span>: <b>" + numFmt(this.points[0].y, 0) + "</b>" +
+								"<br/><span style=\"color:" + this.points[1].series.color + "\">Sentiment</span>: <b>" + numFmt(this.points[1].y, 2) + "</b>";
 							if (this.points[2]) {
-								tooltip += "<br/><span style=\"color:" + this.points[2].series.color + "\">Sentiment MA</span>: <b>" + this.points[2].y.toFixed(2) + "</b>";
+								tooltip += "<br/><span style=\"color:" + this.points[2].series.color + "\">Sentiment MA</span>: <b>" + numFmt(this.points[2].y, 2) + "</b>";
 							}
-							return tooltip;
+							return tooltip + "</span>";
 						}
 					}
 				});
@@ -313,12 +320,10 @@ $("#upper-chart .btn").click(function() {
 	}
 });
 
-// assign selection handler !!!!!
+// assign selection handler 
 $("select").change(function() {
 	$(this)[0].blur(); // rmv ugly focus rectangle
-	$("select option:selected").each(function () {
-		load($(this).attr("value"));
-	});
+	load($("select option:selected").attr("value"));
 });
 
 // initialize
