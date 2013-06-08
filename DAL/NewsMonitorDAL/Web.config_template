@@ -1,0 +1,55 @@
+﻿<?xml version="1.0"?>
+<configuration>
+  <system.web>
+    <compilation debug="true" targetFramework="4.0" />
+  </system.web>
+  
+  <system.serviceModel>
+    
+    <behaviors>
+      <endpointBehaviors>
+        <behavior name="webHttpBehavior">
+          <webHttp  helpEnabled="true"/>
+        </behavior>
+      </endpointBehaviors>
+      <serviceBehaviors>
+        <behavior name="metaDataBehavior">
+          <serviceMetadata httpGetEnabled="true" />
+          <serviceDebug includeExceptionDetailInFaults="true"/>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+    
+    <bindings>
+      <webHttpBinding>
+        <binding name="webHttpBindingWithJsonP" crossDomainScriptAccessEnabled="true"/>
+      </webHttpBinding>
+      <basicHttpBinding>
+        <binding name="basicHttpBindingLongTimeouts"/>
+      </basicHttpBinding>
+    </bindings>
+    
+    <services>
+      <service behaviorConfiguration="metaDataBehavior" name="NewsMonitorDAL.NewsMonitor">
+        <endpoint address="soap" name="Soap" contract="NewsMonitorDAL.NewsMonitor" binding="basicHttpBinding" bindingConfiguration="basicHttpBindingLongTimeouts"/>
+        <endpoint address="rest" name="Rest" contract="NewsMonitorDAL.NewsMonitor" binding="webHttpBinding" bindingConfiguration="webHttpBindingWithJsonP"
+          behaviorConfiguration="webHttpBehavior"/>
+      </service>
+    </services>
+
+    <serviceHostingEnvironment multipleSiteBindingsEnabled="true" />
+    
+  </system.serviceModel>
+  
+  <system.webServer>
+    <modules runAllManagedModulesForAllRequests="true"/>
+  </system.webServer>
+
+  <connectionStrings>
+    <add
+      name="default"
+      connectionString="Data Source=.; Initial Catalog=semantic_annotation; Integrated Security=true;"
+      providerName="System.Data.SqlClient"
+  />
+  </connectionStrings>
+</configuration>

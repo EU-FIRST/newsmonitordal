@@ -1,0 +1,7 @@
+﻿<%@ ServiceHost
+ Language="C#" 
+ Debug="true" 
+ Service="NewsMonitorDAL.NewsMonitor" 
+ CodeBehind="NewsMonitor.svc.cs" 
+ Factory="System.ServiceModel.Activation.WebScriptServiceHostFactory" 
+ %>
