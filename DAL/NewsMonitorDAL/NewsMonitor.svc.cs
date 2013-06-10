@@ -99,7 +99,7 @@ namespace NewsMonitorDAL
 
             StringReplacer strRpl = StringReplacerGetDefaultBasic();
             var sqlParams = new object[] { entityId, days, date, normalize };
-            List<SqlRow.DaySentiment> sentimentTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DaySentiment>("DaySentimentNormalize.sql", strRpl, sqlParams);
+            List<SqlRow.DaySentiment> sentimentTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DaySentiment>("DaySentiment.sql", strRpl, sqlParams);
 
             // important: imput 0 values if they are absent for specific days !!!!!
             int j = 0;
@@ -141,24 +141,69 @@ namespace NewsMonitorDAL
                 : returnArray.ToList();
         }
 
-        private double GetNormalizationParameter(string entityUri)
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public double GetAvgPumpDumpIndex(string entityUri, DateTime date, int days, bool normalize)
         {
-
-            List<DaySentiment> result = GetDaySentiment(entityUri, new DateTime(2012, 11, 24), /*days:*/365, /*normalize:*/ false);
-
-            if (!result.Any()) return 1;
-
-            double avg = result.Average(d => d.SentimentPolatiry);
-            double sum = result.Sum(d => Math.Pow(d.SentimentPolatiry - avg, 2));
-            double stdDev6 = Math.Sqrt((sum) / (result.Count() - 1)) * 6; // six time standard deviation
-
-            if (stdDev6 == 0) return 1;
-
-            return stdDev6;
-
+            List<DayPumpDumpIndex> ds = GetDayPumpDumpIndex(entityUri, date, days, normalize);
+            double d = ds.Average(DayPumpDumpIndex => DayPumpDumpIndex.PumpDumpIndex);
+            return d;
         }
-        
 
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public List<DayPumpDumpIndex> GetMovingAvgPumpDumpIndex(string entityUri, DateTime dateStart, DateTime dateEnd, int window, bool normalize)
+        {
+            int period = Convert.ToInt32(((dateEnd - dateStart).TotalDays));  // number of days between dateEnd and dateStart 
+            List<DayPumpDumpIndex> ds = GetDayPumpDumpIndex(entityUri, dateEnd, period + window, normalize);
+
+            List<DayPumpDumpIndex> result = new List<DayPumpDumpIndex>();
+            for (int i = window - 1; i < period + window; i++)
+            {
+                double avg = 0;
+                for (int j = 0; j < window; j++)
+                {
+                    avg = avg + ds[i - j].PumpDumpIndex;
+                }
+                avg = avg / window;
+
+                DayPumpDumpIndex avgds = new DayPumpDumpIndex { Date = ds[i].Date, PumpDumpIndex = avg };
+                result.Add(avgds);
+            }
+
+            return result;
+        }
+
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public List<DayPumpDumpIndex> GetDayPumpDumpIndex(string entityUri, DateTime date, int days, bool normalize)
+        {
+            int entityId = UriToId(entityUri);
+
+            StringReplacer strRpl = StringReplacerGetDefaultBasic();
+            var sqlParams = new object[] { entityId, days, date, normalize };
+            List<SqlRow.DayPumpDumpIndex> pumpDumpTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DayPumpDumpIndex>("DayPumpDumpIndex.sql", strRpl, sqlParams);
+
+            // important: imput 0 values if they are absent for specific days !!!!!
+            int j = 0;
+            DayPumpDumpIndex[] returnArray = new DayPumpDumpIndex[days];
+            for (int i = 0; i < days; i++)
+            {
+                if (j < pumpDumpTimeSeries.Count && pumpDumpTimeSeries[j].Date.Date == date.AddDays(-days + i + 1).Date)
+                {
+                    SqlRow.DayPumpDumpIndex ds = pumpDumpTimeSeries[j];
+                    returnArray[i] = new DayPumpDumpIndex { DateDate = ds.Date, PumpDumpIndex = ds.PumpDumpIndex };
+                    j++;
+                } else
+                {
+                    returnArray[i] = new DayPumpDumpIndex { DateDate = date.AddDays(-days + i + 1), PumpDumpIndex = 0 };
+                }
+            }
+
+            return normalize
+                ? returnArray.Select(daySent => new DayPumpDumpIndex { DateDate = daySent.DateDate, PumpDumpIndex = Math.Min(daySent.PumpDumpIndex, 1) }).ToList()
+                : returnArray.ToList();
+        }
         
         //Helper functions
         public StringReplacer StringReplacerGetDefaultBasic()

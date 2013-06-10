@@ -57,9 +57,9 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="NewsMonitor.svc" />
-    <EmbeddedResource Include="Sql\DaySentiment.sql" />
     <EmbeddedResource Include="Sql\Entity.sql" />
-    <EmbeddedResource Include="Sql\DaySentimentNormalize.sql" />
+    <EmbeddedResource Include="Sql\DaySentiment.sql" />
+    <EmbeddedResource Include="Sql\DayPumpDumpIndex.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

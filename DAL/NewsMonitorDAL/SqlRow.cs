@@ -22,5 +22,11 @@ namespace NewsMonitorDAL
             public double Sentiment { get; set; }
         }
 
+        public class DayPumpDumpIndex
+        {
+            public DateTime Date { get; set; }
+            public double PumpDumpIndex { get; set; }
+        }
+
     }
 }

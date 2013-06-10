@@ -33,4 +33,19 @@ namespace NewsMonitorDAL
         public double SentimentPolatiry { get; set; }
 
     }
+
+    [DataContract]
+    public class DayPumpDumpIndex
+    {
+        public DateTime DateDate { get; set; }
+        [DataMember(Order = 0)]
+        public string Date
+        {
+            get { return DateDate.ToString("yyyy-MM-dd"); }
+            set { DateDate = DateTime.Parse(value); }
+        }
+        [DataMember(Order = 1)]
+        public double PumpDumpIndex { get; set; }
+
+    }
 }
