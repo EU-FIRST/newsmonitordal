@@ -16,32 +16,6 @@ namespace NewsMonitorDAL
             M
         }
 
-        private static List<EntityInfo> allEntities;
-        private static List<EntityInfo> AllEntities
-        {
-            get
-            {
-                if (allEntities == null)
-                    allEntities = new NewsMonitor().AllEntities();
-                return allEntities;
-            }
-        }
-
-        public static string Entity(string entity, string windowSize)
-        {
-            if (AllEntities.Any(ent => 
-                ent.Entity.ToLower() == entity.ToLower() && 
-                ent.WindowSize.ToLower() == windowSize.ToLower()
-                ))
-                return entity.ToUpper();
-
-            throw new WebFaultException<string>(
-                string.Format("The specified entity ({0}) with a combination with the specified windowSize ({1}) does not exist! " +
-                              "Use the provided services to check all available entity-windowSize combinations.",
-                              entity, windowSize),
-                HttpStatusCode.NotAcceptable);
-        }
-
         public static string Stock(string stock)
         {
             if (string.IsNullOrWhiteSpace(stock))
@@ -56,21 +30,6 @@ namespace NewsMonitorDAL
                     HttpStatusCode.NotAcceptable
                 );
             return stock.Substring(1);
-        }
-
-        public static string FirstWindowSize(string entity)
-        {
-            IEnumerable<EntityInfo> entities = AllEntities.Where(ent =>
-                ent.Entity.ToLower() == entity.ToLower()
-                );
-            if (entities.Any()) 
-                return entities.First().WindowSize;
-
-            throw new WebFaultException<string>(
-                string.Format("The specified entity ({0}) does not exist! " +
-                              "Use the provided services to check all available entities.",
-                              entity),
-                HttpStatusCode.NotAcceptable);
         }
 
         public static string WindowSize(string windowSize)
@@ -96,11 +55,6 @@ namespace NewsMonitorDAL
                 return defaultValue;
             
             return maxNumTopics;
-        }
-
-        public static int FilterFlagCheck(int filterFlag)
-        {
-            return Math.Max((int)filterFlag, (int)FilterFlag.TermUnigram);
         }
 
         public static TimeSpan StepTimeSpan(TimeSpan stepTimeSpan)

@@ -55,16 +55,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\TagCloud.sql" />
-    <EmbeddedResource Include="Sql\Topics.sql" />
-    <EmbeddedResource Include="Sql\TopicsOverTime.sql" />
-    <EmbeddedResource Include="Sql\TopicsOverTimeDetail.sql" />
-    <EmbeddedResource Include="Sql\AllEntities.sql" />
-    <EmbeddedResource Include="Sql\EntityDetail.sql" />
-    <EmbeddedResource Include="Sql\AllTopicsOverTime.sql" />
     <Content Include="Global.asax" />
-    <EmbeddedResource Include="Sql\SentimentTimeline.sql" />
-    <EmbeddedResource Include="Sql\GetTweetsSentiment.sql" />
     <Content Include="NewsMonitor.svc" />
     <EmbeddedResource Include="Sql\DaySentiment.sql" />
     <EmbeddedResource Include="Sql\Entity.sql" />
