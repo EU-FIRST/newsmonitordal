@@ -6,7 +6,11 @@
 --ADD DECLARE @date DATE = {2}
 
 SELECT O.[date] AS [Date], 
-       SUM(BS.positives - BS.negatives)/CAST(SUM(BS.positives + BS.negatives) AS FLOAT) AS Sentiment
+       COALESCE( 
+			SUM(BS.positives - BS.negatives)/
+				CAST(NULLIF(SUM(BS.positives + BS.negatives), 0) AS FLOAT)
+			,0
+		) AS Sentiment -- if (BS.positives + BS.negatives == 0) returns 0
   FROM block_sentiment BS
        LEFT JOIN occurrence O
 	          ON BS.document_id = O.document_id

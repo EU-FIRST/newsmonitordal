@@ -1,4 +1,4 @@
-﻿/*REM*/ DECLARE @uri VARCHAR(max) = 'http://project-first.eu/ontology#pos_mint'
+﻿/*REM*/ DECLARE @uri VARCHAR(max) = 'http://project-first.eu/ontology#cou_US'
 /*REM*/ DECLARE @labelLike VARCHAR(max) = 'slovenia'
 --ADD DECLARE @uri VARCHAR(MAX) = {0}
 --ADD DECLARE @labelLike VARCHAR(MAX) = {1}

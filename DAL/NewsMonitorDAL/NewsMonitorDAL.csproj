@@ -10,8 +10,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TwitterMonitorDAL</RootNamespace>
-    <AssemblyName>TwitterMonitorDAL</AssemblyName>
+    <RootNamespace>NewsMonitorDAL</RootNamespace>
+    <AssemblyName>NewsMonitorDAL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
@@ -59,6 +59,7 @@
     <Content Include="NewsMonitor.svc" />
     <EmbeddedResource Include="Sql\DaySentiment.sql" />
     <EmbeddedResource Include="Sql\Entity.sql" />
+    <EmbeddedResource Include="Sql\DaySentimentNormalize.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

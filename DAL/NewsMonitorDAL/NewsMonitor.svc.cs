@@ -98,8 +98,8 @@ namespace NewsMonitorDAL
             int entityId = UriToId(entityUri);
 
             StringReplacer strRpl = StringReplacerGetDefaultBasic();
-            var sqlParams = new object[] { entityId, days, date };
-            List<SqlRow.DaySentiment> sentimentTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DaySentiment>("DaySentiment.sql", strRpl, sqlParams);
+            var sqlParams = new object[] { entityId, days, date, normalize };
+            List<SqlRow.DaySentiment> sentimentTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DaySentiment>("DaySentimentNormalize.sql", strRpl, sqlParams);
 
             // important: imput 0 values if they are absent for specific days !!!!!
             int j = 0;
@@ -117,11 +117,11 @@ namespace NewsMonitorDAL
                 }
             }
 
+            /*
             if (!normalize)
             {
                 return returnArray.ToList();
             }
-
             // normalize
             double normPar = GetNormalizationParameter(entityUri);
             foreach (var daySentiment in returnArray)
@@ -134,8 +134,11 @@ namespace NewsMonitorDAL
                 {
                     daySentiment.SentimentPolatiry = -1;
                 }
-            }
-            return returnArray.ToList();
+            }*/
+
+            return normalize
+                ? returnArray.Select(daySent => new DaySentiment { DateDate = daySent.DateDate, SentimentPolatiry = Math.Min(daySent.SentimentPolatiry, 1) }).ToList()
+                : returnArray.ToList();
         }
 
         private double GetNormalizationParameter(string entityUri)
@@ -143,13 +146,18 @@ namespace NewsMonitorDAL
 
             List<DaySentiment> result = GetDaySentiment(entityUri, new DateTime(2012, 11, 24), /*days:*/365, /*normalize:*/ false);
 
+            if (!result.Any()) return 1;
+
             double avg = result.Average(d => d.SentimentPolatiry);
             double sum = result.Sum(d => Math.Pow(d.SentimentPolatiry - avg, 2));
             double stdDev6 = Math.Sqrt((sum) / (result.Count() - 1)) * 6; // six time standard deviation
+
+            if (stdDev6 == 0) return 1;
+
             return stdDev6;
 
         }
-
+        
 
         
         //Helper functions
