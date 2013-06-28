@@ -10,42 +10,90 @@ namespace NewsMonitorDAL
     public class Entity
     {
         [DataMember(Order = 0)]
-        public int Id { get; set; }
+        public string Id { get; set; }
         [DataMember(Order = 1)]
-        public string Label { get; set; }
+        public string Description { get; set; }
         [DataMember(Order = 2)]
-        public string Uri { get; set; }
+        public string Features { get; set; }
+    }
+
+    [DataContract]
+    public class EntityDetail
+    {
+        [DataMember(Order = 0)]
+        public string Id { get; set; }
+        [DataMember(Order = 1)]
+        public string Description { get; set; }
+        [DataMember(Order = 2)]
+        public int NumDocuments { get; set; }
         [DataMember(Order = 3)]
-        public string EncodedUri { get; set; }
+        public int NumOccurrences { get; set; }
+        
+        public DateTime DataStartTimeDate { get; set; }
+        [DataMember(Order = 4)]
+        public string DataStartTime
+        {
+            get { return DataStartTimeDate == DateTime.MinValue ? "" : DataStartTimeDate.ToString("yyyy-MM-dd"); }
+            set { }
+        }
+        
+        public DateTime DataEndTimeDate { get; set; }
+        [DataMember(Order = 5)]
+        public string DataEndTime
+        {
+            get { return DataEndTimeDate == DateTime.MinValue ? "" : DataEndTimeDate.ToString("yyyy-MM-dd"); }
+            set { }
+        }
+        [DataMember(Order = 6)]
+        public string Features { get; set; }
     }
 
     [DataContract]
-    public class DaySentiment
+    public class DayData
     {
         public DateTime DateDate { get; set; }
         [DataMember(Order = 0)]
         public string Date
         {
             get { return DateDate.ToString("yyyy-MM-dd"); }
-            set { DateDate = DateTime.Parse(value); }
+            set { }
         }
-        [DataMember(Order = 1)]
-        public double SentimentPolatiry { get; set; }
-
     }
 
     [DataContract]
-    public class DayPumpDumpIndex
+    public class DayVolume : DayData
     {
-        public DateTime DateDate { get; set; }
-        [DataMember(Order = 0)]
-        public string Date
-        {
-            get { return DateDate.ToString("yyyy-MM-dd"); }
-            set { DateDate = DateTime.Parse(value); }
-        }
         [DataMember(Order = 1)]
-        public double PumpDumpIndex { get; set; }
-
+        public double Volume { get; set; }
     }
+
+    [DataContract]
+    public class DayIndex : DayData
+    {
+        [DataMember(Order = 1)]
+        public double Index { get; set; }
+    }
+
+    [DataContract]
+    public class DayVolumeIndex : DayData
+    {
+        [DataMember(Order = 1)]
+        public double Volume { get; set; }
+        [DataMember(Order = 2)]
+        public double Index { get; set; }
+    }
+    
+    [DataContract]
+    public class DayIndexClasses : DayData
+    {
+        [DataMember(Order = 1)]
+        public double Positives { get; set; }
+        [DataMember(Order = 2)]
+        public double PosNeutrals { get; set; }
+        [DataMember(Order = 3)]
+        public double NegNeutrals { get; set; }
+        [DataMember(Order = 4)]
+        public double Negatives { get; set; }
+    }
+
 }

@@ -14,18 +14,34 @@ namespace NewsMonitorDAL
             public string EntityLabel { get; set; }
             public string Flags { get; set; }
             public int ClassId { get; set; }
+            public int NumDocuments { get; set; }
+            public int NumOccurrences { get; set; }
+            public DateTime? DataStartTime { get; set; }
+            public DateTime? DataEndTime { get; set; }
+            public string Features { get; set; }
         }
 
-        public class DaySentiment
+        public class DayVolume
         {
             public DateTime Date { get; set; }
-            public double Sentiment { get; set; }
+            public int Volume { get; set; }
         }
 
-        public class DayPumpDumpIndex
+        public class DayIndex
         {
             public DateTime Date { get; set; }
-            public double PumpDumpIndex { get; set; }
+            public double Index { get; set; }
+        }
+
+        public class DayIndexClasses
+        {
+            public DateTime Date { get; set; }
+            public int Positives { get; set; }
+            public int PosNeutrals { get; set; }
+            public int Neutrals { get; set; }
+            public int NegNeutrals { get; set; }
+            public int Negatives { get; set; }
+            public int Volume { get; set; }
         }
 
     }

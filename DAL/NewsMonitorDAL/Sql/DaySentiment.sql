@@ -1,10 +1,10 @@
-/*REM*/ DECLARE @entityId INT = 2085
-/*REM*/ DECLARE @days INT = 14
-/*REM*/ DECLARE @date DATE = '2013-06-07'
+/*REM*/ DECLARE @entity VARCHAR(MAX) = 'http://project-first.eu/ontology#cou_US'
+/*REM*/ DECLARE @from DATE = '2013-05-07'
+/*REM*/ DECLARE @to DATE = '2013-06-07'
 /*REM*/ DECLARE @normalize BIT = 1
---ADD DECLARE @entityId INT = {0}
---ADD DECLARE @days INT = {1}
---ADD DECLARE @date DATE = {2}
+--ADD DECLARE @entity VARCHAR(MAX) = {0}
+--ADD DECLARE @from DATE = {1}
+--ADD DECLARE @to DATE = {2}
 --ADD DECLARE @normalize BIT = {3}
 
 DECLARE @sentStDevMod float = 6
@@ -12,29 +12,33 @@ DECLARE @sentStDev float = 1/@sentStDevMod
 
 --Retrieveng normalization parameter - standard deviation of the first year of entity's data
 IF (@normalize = 1) BEGIN
-	DECLARE @dateNormalize DATE
-	SELECT @dateNormalize = MIN(O.[date])
-	  FROM occurrence O
-	 WHERE O.entity_id = @entityId
+	DECLARE @toNormalize DATE
+	SELECT @toNormalize = MIN(O.[date])
+	  FROM entity E
+           INNER JOIN occurrence O
+                   ON O.entity_id = E.id
+	 WHERE E.entity_uri = @entity
 
-	SELECT @sentStDev = COALESCE(STDEV(SentByDays.Sentiment), 1)
+	SELECT @sentStDev = COALESCE(STDEV(IndexByDays.[Index]), 1)
 	  FROM (SELECT O.[date] AS [Date], 
 					 COALESCE( 
         				SUM(BS.positives - BS.negatives)/
         					CAST(NULLIF(SUM(BS.positives + BS.negatives), 0) AS FLOAT)
         				,0
-        			) AS Sentiment -- if (BS.positives + BS.negatives == 0) returns 0
+        			) AS [Index] -- if (BS.positives + BS.negatives == 0) returns 0
 			  FROM block_sentiment BS
 				   LEFT JOIN occurrence O
         				  ON BS.document_id = O.document_id
-			 WHERE     O.entity_id = @entityId 
-				   AND O.[date] >= @dateNormalize
-				   AND O.[date] < DATEADD (DAY, 365, @dateNormalize)
+                   INNER JOIN entity E
+                           ON O.entity_id = E.id
+			 WHERE     E.entity_uri = @entity
+				   AND O.[date] >= @toNormalize
+				   AND O.[date] < DATEADD (DAY, 365, @toNormalize)
 			 GROUP BY O.[date]
-			) SentByDays
+			) IndexByDays
 
-/*REM*/ PRINT '@dateNormalize = ' + CONVERT(VARCHAR(MAX), @dateNormalize)
-/*REM*/ PRINT '@dateNormalize + year = ' + CONVERT(VARCHAR(MAX), DATEADD (DAY, 365, @dateNormalize))
+/*REM*/ PRINT '@toNormalize = ' + CONVERT(VARCHAR(MAX), @toNormalize)
+/*REM*/ PRINT '@toNormalize + year = ' + CONVERT(VARCHAR(MAX), DATEADD (DAY, 365, @toNormalize))
 /*REM*/ PRINT '@sentStDev = ' + CONVERT(VARCHAR(MAX), @sentStDev)
 END
 
@@ -46,19 +50,14 @@ SELECT O.[date] AS [Date],
 				,0
         )/
         (@sentStDevMod*@sentStDev)
-		AS Sentiment -- if (BS.positives + BS.negatives == 0) returns 0
+		AS [Index] -- if (BS.positives + BS.negatives == 0) returns 0
   FROM block_sentiment BS
        LEFT JOIN occurrence O
 	          ON BS.document_id = O.document_id
- WHERE     O.entity_id = @entityId 
-       AND O.[date] > DATEADD (DAY, -@days , @date)
-       AND O.[date] <= @date
+       INNER JOIN entity E
+              ON O.entity_id = E.id
+ WHERE     E.entity_uri = @entity
+       AND O.[date] >= @from
+       AND O.[date] <= @to
  GROUP BY O.[date]
  ORDER BY O.[date]
-
-
-
-
-
-
-

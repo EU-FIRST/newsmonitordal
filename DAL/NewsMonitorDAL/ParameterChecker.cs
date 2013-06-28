@@ -9,6 +9,7 @@ namespace NewsMonitorDAL
 {
     public class ParameterChecker
     {
+
         public enum WindowSizeParam
         {
             D,
@@ -41,6 +42,34 @@ namespace NewsMonitorDAL
             return WindowSizeParam.W.ToString();
         }
 
+        public static Aggregate Aggregate(string aggregate, Aggregate defaultAggEnum)
+        {
+            if (string.IsNullOrWhiteSpace(aggregate))
+                return defaultAggEnum;
+
+            Aggregate aggEnum;
+            if (Enum.TryParse(aggregate, true, out aggEnum))
+                return aggEnum;
+
+            throw new WebFaultException<string>(
+                    string.Format("Aggregate parameter could not be parsed! Please consult documentation."), 
+                    HttpStatusCode.NotAcceptable);
+        }
+
+        public static DataType DataType(string dataType, DataType defaultDtEnum)
+        {
+            if (string.IsNullOrWhiteSpace(dataType))
+                return defaultDtEnum;
+
+            DataType dtRnum;
+            if (Enum.TryParse(dataType, true, out dtRnum))
+                return dtRnum;
+
+            throw new WebFaultException<string>(
+                    string.Format("Data parameter could not be parsed! Please consult documentation."),
+                    HttpStatusCode.NotAcceptable);
+        }
+
         public static int PositiveNumber(int maxNumTopics, int defaultValue)
         {
             if (maxNumTopics < 0)
@@ -49,12 +78,12 @@ namespace NewsMonitorDAL
             return maxNumTopics;
         }
 
-        public static int StrictlyPositiveNumber(int maxNumTopics, int defaultValue)
+        public static int StrictlyPositiveNumber(int num, int defaultValue)
         {
-            if (maxNumTopics <= 0)
+            if (num <= 0)
                 return defaultValue;
             
-            return maxNumTopics;
+            return num;
         }
 
         public static TimeSpan StepTimeSpan(TimeSpan stepTimeSpan)
@@ -98,5 +127,41 @@ namespace NewsMonitorDAL
                                   maxPoints, maxNumTopics, stepTimeSpan, dateTimeStart, dateTimeEnd, pointNum),
                     HttpStatusCode.NotAcceptable);
         }
+
+        public static void TimeSpan(ref DateTime from, ref DateTime to, ref int days)
+        {
+            from = ParameterChecker.DateRoundToDayLeaveMin(from); //inclusive from
+            to = ParameterChecker.DateRoundToDayLeaveMin(to); //inclusive to
+            days = ParameterChecker.StrictlyPositiveNumber(days, 1);
+
+            // (from & to)
+            if (from != DateTime.MinValue && to != DateTime.MinValue)
+            {
+                if (to < from) to = from;
+                days = (int)Math.Round((to - from).TotalDays + 1);
+            }
+            // (from & !to)
+            else if (from != DateTime.MinValue)
+            {
+                to = from + new TimeSpan(days - 1, 0, 0, 0);
+            }
+            // (!from & to)
+            else if (to != DateTime.MinValue)
+            {
+                from = to - new TimeSpan(days - 1, 0, 0, 0);
+            }
+            // (!from & !to)
+            else
+            {
+                to = ParameterChecker.DateRoundToDayLeaveMin(DateTime.Now);
+                from = to - new TimeSpan(days - 1, 0, 0, 0);
+            }
+            //throw new WebFaultException<string>(
+            //    string.Format("One of the following sets of parameters must be set: (stock, from, to) or (stock, date) or (stock, days)!"),
+            //    HttpStatusCode.NotAcceptable
+            //    );
+        }
+
+
     }
 }

@@ -16,5 +16,6 @@ namespace NewsMonitorDAL
         {
             return this.Aggregate(source, (current, replacement) => current.Replace(replacement.Item1, replacement.Item2));
         }
+
     }
 }

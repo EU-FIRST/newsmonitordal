@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ExcludeGeneratedDebugSymbol>false</ExcludeGeneratedDebugSymbol>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,8 +59,12 @@
     <Content Include="Global.asax" />
     <Content Include="NewsMonitor.svc" />
     <EmbeddedResource Include="Sql\Entity.sql" />
+    <EmbeddedResource Include="Sql\DayPumpDump.sql" />
     <EmbeddedResource Include="Sql\DaySentiment.sql" />
-    <EmbeddedResource Include="Sql\DayPumpDumpIndex.sql" />
+    <EmbeddedResource Include="Sql\DaySentimentClasses.sql" />
+    <EmbeddedResource Include="Sql\DayVolume.sql" />
+    <EmbeddedResource Include="Sql\DayPumpDumpClasses.sql" />
+    <EmbeddedResource Include="Sql\EntityDetail.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -103,8 +108,8 @@
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>10424</DevelopmentServerPort>
+          <AutoAssignPort>False</AutoAssignPort>
+          <DevelopmentServerPort>11111</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
