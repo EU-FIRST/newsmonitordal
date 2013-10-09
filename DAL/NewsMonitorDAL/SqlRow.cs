@@ -21,6 +21,21 @@ namespace NewsMonitorDAL
             public string Features { get; set; }
         }
 
+        public class DayDocument
+        {
+            public DateTime Date { get; set; }
+            public DateTime RetrieveTime { get; set; }
+            public string DomainName { get; set; }
+            public string Url { get; set; }
+            public Guid DocumentId { get; set; }
+            public double Index { get; set; }
+        }
+
+        public class DocumentFileName
+        {
+            public string FileName { get; set; }
+        }
+
         public class DayVolume
         {
             public DateTime Date { get; set; }

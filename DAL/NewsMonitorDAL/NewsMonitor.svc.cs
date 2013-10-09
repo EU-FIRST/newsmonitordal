@@ -14,6 +14,7 @@ using System.Web;
 using Latino;
 using Latino.Model;
 using Latino.Visualization;
+using System.Configuration;
 
 
 namespace NewsMonitorDAL
@@ -178,11 +179,82 @@ namespace NewsMonitorDAL
                 });
         }
 
+        // ************ DrillDown *******************
+
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public DocumentDetail Document(Guid documentId)
+        {
+
+            StringReplacer strRpl = StringReplacerGetDefaultBasic();
+            var sqlParams = new object[] { documentId };
+            List<SqlRow.DocumentFileName> documentFilename = DataProvider.GetDataWithReplace<SqlRow.DocumentFileName>("DocumentFileName.sql", strRpl, sqlParams);
+
+            if (documentFilename.Any())
+            {
+                string fileServer = ConfigurationManager.AppSettings["fileServer"];
+                string fileNameWrong = documentFilename.First().FileName;
+                string fileNameCorrect =
+                    fileNameWrong.Substring(0, fileNameWrong.LastIndexOf('_') + 1) +
+                    documentId.ToString().Replace("-", "") +
+                    fileNameWrong.Substring(fileNameWrong.IndexOf('.'));
+                string fileName = (fileServer + fileNameCorrect).Replace('\\', '/');
+
+                WebClient wc = new WebClient();
+                Stream webStream = wc.OpenRead(fileName);
+                
+                Latino.Workflows.TextMining.Document doc = new Latino.Workflows.TextMining.Document("","");
+                doc.ReadXmlCompressed(webStream);
+                webStream.Close();
+
+                return new DocumentDetail()
+                {
+                    DocumentId = documentId,
+                    Title = doc.Name,
+                    Content = doc.Text
+                };
+            }
+
+            throw new WebFaultException<string>(
+                string.Format("No documents with id '{0}' found in the database.", documentId),
+                HttpStatusCode.NotAcceptable);
+
+        }
+
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public List<DayDocument> DocumentList(string entity, DateTime from, DateTime to, int days, string data, bool normalize)
+        {
+            if (string.IsNullOrWhiteSpace(entity)) return new List<DayDocument>();
+
+            ParameterChecker.TimeSpan(ref from, ref to, ref days);
+            DataType dataType = ParameterChecker.DataType(data, DataType.Sentiment);
+
+            if (dataType == DataType.PumpDump)
+                throw new WebFaultException<string>(
+                        string.Format("Data of type 'PumpDump' not supported yet in DocumentList service. If required please send a request for support to the service author."),
+                        HttpStatusCode.NotAcceptable);
+
+            StringReplacer strRpl = StringReplacerGetDefaultBasic();
+            var sqlParams = new object[] { entity, from, to, normalize };
+            List<SqlRow.DayDocument> documents = DataProvider.GetDataWithReplace<SqlRow.DayDocument>(dataType == DataType.Sentiment ? "DayDocument.sql" : "DayDocument.sql", strRpl, sqlParams);
+
+            return documents.Select(doc => new DayDocument()
+            {
+                DateDate = doc.Date,
+                RetrieveTimeDate = doc.RetrieveTime,
+                DomainName = doc.DomainName,
+                Url = doc.Url,
+                DocumentId = doc.DocumentId,
+                Index = doc.Index
+            }).ToList();
+        }
+
         // ************ Index *******************
 
         [OperationContract]
         [WebGet(ResponseFormat = WebMessageFormat.Json)]
-        public List<DayIndex> Index(string entity, DateTime from, DateTime to, int days, string data, string aggregate, int maWindow)
+        public List<DayIndex> Index(string entity, DateTime from, DateTime to, int days, string data, string aggregate, int maWindow, bool normalize)
         {
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayIndex>();
 
@@ -196,7 +268,7 @@ namespace NewsMonitorDAL
                 days += maWindow;
             }
 
-            List<DayIndex> returnArray = GetIndex(entity, from, to, days, dataEnum);
+            List<DayIndex> returnArray = GetIndex(entity, from, to, days, dataEnum, normalize);
             switch (aggEnum)
             {
                 case Aggregate.Day:
@@ -211,10 +283,10 @@ namespace NewsMonitorDAL
 
         }
 
-        private List<DayIndex> GetIndex(string entity, DateTime from, DateTime to, int days, DataType dataType)
+        private List<DayIndex> GetIndex(string entity, DateTime from, DateTime to, int days, DataType dataType, bool normalize)
         {
             StringReplacer strRpl = StringReplacerGetDefaultBasic();
-            var sqlParams = new object[] { entity, from, to, days };
+            var sqlParams = new object[] { entity, from, to, normalize };
             List<SqlRow.DayIndex> indexTimeSeries = DataProvider.GetDataWithReplace<SqlRow.DayIndex>(dataType == DataType.Sentiment ? "DaySentiment.sql" : "DayPumpDump.sql", strRpl, sqlParams);
 
             var returnArray = FillMissingDates(from, days, indexTimeSeries, dv => new DayIndex() { DateDate = dv.Date, Index = dv.Index }, dv => dv.Date);
@@ -256,7 +328,7 @@ namespace NewsMonitorDAL
         
         [OperationContract]
         [WebGet(ResponseFormat = WebMessageFormat.Json)]
-        public List<DayVolumeIndex> VolumeAndIndex(string entity, DateTime from, DateTime to, int days, string data, string aggregate, int maWindow)
+        public List<DayVolumeIndex> VolumeAndIndex(string entity, DateTime from, DateTime to, int days, string data, string aggregate, int maWindow, bool normalize)
         {
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayVolumeIndex>();
 
@@ -271,7 +343,7 @@ namespace NewsMonitorDAL
             }
 
             List<DayVolume> volumeData = GetVolume(entity, from, to, days);
-            List<DayIndex> indexData = GetIndex(entity, from, to, days, dataEnum);
+            List<DayIndex> indexData = GetIndex(entity, from, to, days, dataEnum, normalize);
             switch (aggEnum)
             {
                 case Aggregate.Day:

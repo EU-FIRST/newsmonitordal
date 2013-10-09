@@ -49,6 +49,38 @@ namespace NewsMonitorDAL
     }
 
     [DataContract]
+    public class DayDocument : DayData
+    {
+        public DateTime RetrieveTimeDate { get; set; }
+        [DataMember(Order = 1)]
+        public string RetrieveTime
+        {
+            get { return RetrieveTimeDate.ToString("s", System.Globalization.CultureInfo.InvariantCulture); }
+            set { }
+        }
+        [DataMember(Order = 2)]
+        public string DomainName { get; set; }
+        [DataMember(Order = 3)]
+        public string Url { get; set; }
+        [DataMember(Order = 4)]
+        public Guid DocumentId { get; set; }
+        [DataMember(Order = 5)]
+        public double Index { get; set; }
+    }
+
+    [DataContract]
+    public class DocumentDetail
+    {
+        [DataMember(Order = 0)]
+        public Guid DocumentId { get; set; }
+        [DataMember(Order = 1)]
+        public string Title { get; set; }
+        [DataMember(Order = 2)]
+        public string Content { get; set; }
+    }
+
+
+    [DataContract]
     public class DayData
     {
         public DateTime DateDate { get; set; }

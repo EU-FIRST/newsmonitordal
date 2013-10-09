@@ -1,0 +1,6 @@
+/*REM*/ DECLARE @guid UNIQUEIDENTIFIER = 'dad53821-6fa5-8438-88d6-470c372e18c5'
+--ADD DECLARE @guid UNIQUEIDENTIFIER = {0}
+
+SELECT [FileName]
+  FROM GuidMap 
+ WHERE Correct = @guid
