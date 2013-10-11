@@ -42,31 +42,17 @@ namespace NewsMonitorDAL
             return WindowSizeParam.W.ToString();
         }
 
-        public static Aggregate Aggregate(string aggregate, Aggregate defaultAggEnum)
+        public static EnumTypeT EnumParse<EnumTypeT>(string enumValue, EnumTypeT defaultValue) where EnumTypeT : struct, IConvertible
         {
-            if (string.IsNullOrWhiteSpace(aggregate))
-                return defaultAggEnum;
+            if (string.IsNullOrWhiteSpace(enumValue))
+                return defaultValue;
 
-            Aggregate aggEnum;
-            if (Enum.TryParse(aggregate, true, out aggEnum))
-                return aggEnum;
+            EnumTypeT parsedValue;
+            if (Enum.TryParse(enumValue, true, out parsedValue))
+                return parsedValue;
 
             throw new WebFaultException<string>(
-                    string.Format("Aggregate parameter could not be parsed! Please consult documentation."), 
-                    HttpStatusCode.NotAcceptable);
-        }
-
-        public static DataType DataType(string dataType, DataType defaultDtEnum)
-        {
-            if (string.IsNullOrWhiteSpace(dataType))
-                return defaultDtEnum;
-
-            DataType dtRnum;
-            if (Enum.TryParse(dataType, true, out dtRnum))
-                return dtRnum;
-
-            throw new WebFaultException<string>(
-                    string.Format("Data parameter could not be parsed! Please consult documentation."),
+                    string.Format("{0} parameter with value '{1}' could not be parsed! Please consult documentation.", typeof(EnumTypeT).Name, enumValue),
                     HttpStatusCode.NotAcceptable);
         }
 
@@ -83,6 +69,14 @@ namespace NewsMonitorDAL
             if (num <= 0)
                 return defaultValue;
             
+            return num;
+        }
+
+        public static int ZeroOrOne(int num, int defaultValue)
+        {
+            if (num < 0 || num >1)
+                return defaultValue;
+
             return num;
         }
 

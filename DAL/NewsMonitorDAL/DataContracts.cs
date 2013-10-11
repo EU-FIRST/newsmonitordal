@@ -128,4 +128,15 @@ namespace NewsMonitorDAL
         public double Negatives { get; set; }
     }
 
+    [DataContract]
+    public class TermWeight 
+    {
+        [DataMember(Order = 0)]
+        public string Term { get; set; }
+        [DataMember(Order = 1)]
+        public int Weight { get; set; }
+        [DataMember(Order = 2)]
+        public string TermClass { get; set; }
+    }
+
 }

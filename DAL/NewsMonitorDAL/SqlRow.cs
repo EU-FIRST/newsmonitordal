@@ -59,5 +59,16 @@ namespace NewsMonitorDAL
             public int Volume { get; set; }
         }
 
+        public class DocumentTitle
+        {
+            public string Title { get; set; }
+        }
+
+        public class EntityCountClasspath
+        {
+            public string Entity { get; set; }
+            public int Count { get; set; }
+            public string ClassPath { get; set; }
+        }
     }
 }

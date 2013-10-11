@@ -56,7 +56,8 @@ namespace NewsMonitorDAL
             using (var db = new DataContext(GetConnectionString(connectionStringId)))
             {
                 db.CommandTimeout = 600;
-                return db.ExecuteQuery<T>(sql, sqlParams ?? new object[] {}).ToList();
+                List<T> dataWithReplace = db.ExecuteQuery<T>(sql, sqlParams ?? new object[] {}).ToList();
+                return dataWithReplace;
             }
 
 

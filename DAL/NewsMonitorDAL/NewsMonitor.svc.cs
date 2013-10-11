@@ -13,7 +13,8 @@ using System.Text;
 using System.Web;
 using Latino;
 using Latino.Model;
-using Latino.Visualization;
+ using Latino.TextMining;
+ using Latino.Visualization;
 using System.Configuration;
 
 
@@ -30,6 +31,12 @@ namespace NewsMonitorDAL
         Sentiment,
         PumpDump
     }
+    public enum TagCloudType
+    {
+        Titles, 
+        Entities,
+    };
+
 
     [ServiceContract]
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -114,8 +121,8 @@ namespace NewsMonitorDAL
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayVolume>();
 
             ParameterChecker.TimeSpan(ref from, ref to, ref days);
-            DataType dataEnum = ParameterChecker.DataType(data, DataType.Sentiment);
-            Aggregate aggEnum = ParameterChecker.Aggregate(aggregate, Aggregate.Day);
+            DataType dataEnum = ParameterChecker.EnumParse(data, DataType.Sentiment);
+            Aggregate aggEnum = ParameterChecker.EnumParse(aggregate, Aggregate.Day);
             maWindow = ParameterChecker.StrictlyPositiveNumber(maWindow, 0);
             if (aggEnum == Aggregate.MA)
             {
@@ -228,7 +235,7 @@ namespace NewsMonitorDAL
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayDocument>();
 
             ParameterChecker.TimeSpan(ref from, ref to, ref days);
-            DataType dataType = ParameterChecker.DataType(data, DataType.Sentiment);
+            DataType dataType = ParameterChecker.EnumParse(data, DataType.Sentiment);
 
             if (dataType == DataType.PumpDump)
                 throw new WebFaultException<string>(
@@ -259,8 +266,8 @@ namespace NewsMonitorDAL
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayIndex>();
 
             ParameterChecker.TimeSpan(ref from, ref to, ref days);
-            DataType dataEnum = ParameterChecker.DataType(data, DataType.Sentiment);
-            Aggregate aggEnum = ParameterChecker.Aggregate(aggregate, Aggregate.Day);
+            DataType dataEnum = ParameterChecker.EnumParse(data, DataType.Sentiment);
+            Aggregate aggEnum = ParameterChecker.EnumParse(aggregate, Aggregate.Day);
             maWindow = ParameterChecker.StrictlyPositiveNumber(maWindow, 0);
             if (aggEnum == Aggregate.MA)
             {
@@ -333,8 +340,8 @@ namespace NewsMonitorDAL
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayVolumeIndex>();
 
             ParameterChecker.TimeSpan(ref from, ref to, ref days);
-            DataType dataEnum = ParameterChecker.DataType(data, DataType.Sentiment);
-            Aggregate aggEnum = ParameterChecker.Aggregate(aggregate, Aggregate.Day);
+            DataType dataEnum = ParameterChecker.EnumParse(data, DataType.Sentiment);
+            Aggregate aggEnum = ParameterChecker.EnumParse(aggregate, Aggregate.Day);
             maWindow = ParameterChecker.StrictlyPositiveNumber(maWindow, 0);
             if (aggEnum == Aggregate.MA)
             {
@@ -394,8 +401,8 @@ namespace NewsMonitorDAL
             if (string.IsNullOrWhiteSpace(entity)) return new List<DayIndexClasses>();
 
             ParameterChecker.TimeSpan(ref from, ref to, ref days);
-            DataType dataEnum = ParameterChecker.DataType(data, DataType.Sentiment);
-            Aggregate aggEnum = ParameterChecker.Aggregate(aggregate, Aggregate.Day);
+            DataType dataEnum = ParameterChecker.EnumParse(data, DataType.Sentiment);
+            Aggregate aggEnum = ParameterChecker.EnumParse(aggregate, Aggregate.Day);
             maWindow = ParameterChecker.StrictlyPositiveNumber(maWindow, 0);
             if (aggEnum == Aggregate.MA)
             {
@@ -598,6 +605,98 @@ namespace NewsMonitorDAL
                 : returnArray.ToList();
         }
 
+        // ************ Tag cloud news *******************
+        //invoke example: http://localhost:11111/NewsMonitor.svc/rest/TagCloud?entity=http%3A%2F%2Fproject-first.eu%2Fontology%23cou_SI&from=2012-08-23&to=2012-08-24&days=2&confidence=2&tagCloudType=Titles&maxNumTerms=100&FinancialOnly=0
+
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        public List<TermWeight> TagCloud(string entity, DateTime from, DateTime to, int days, int confidence, string tagCloudType, int maxNumTerms, int financialOnly)
+        {
+            ParameterChecker.TimeSpan(ref from, ref to, ref days);                                            // check parameters
+            confidence = ParameterChecker.StrictlyPositiveNumber(confidence, 2);
+            TagCloudType tagCloudTypePrm = ParameterChecker.EnumParse(tagCloudType, TagCloudType.Titles);
+            maxNumTerms = ParameterChecker.StrictlyPositiveNumber(maxNumTerms, 100);
+            financialOnly = ParameterChecker.ZeroOrOne(financialOnly, 0);
+
+            return (tagCloudTypePrm == TagCloudType.Titles)
+                       ? TagCloudTitles(entity, from, to, confidence, maxNumTerms, financialOnly)
+                       : (tagCloudTypePrm == TagCloudType.Entities)
+                             ? TagCloudEntities(entity, @from, to, confidence, maxNumTerms, financialOnly)
+                             : new List<TermWeight>();
+            
+        }
+
+        private List<TermWeight> TagCloudTitles(string entity, DateTime from, DateTime to, int confidence, int maxNumTerms, int financialOnly)
+        {
+            StringReplacer strRpl = StringReplacerGetDefaultBasic();
+            var sqlParams = new object[] { entity, from, to, confidence, financialOnly };
+            List<SqlRow.DocumentTitle> titles =
+                DataProvider.GetDataWithReplace<SqlRow.DocumentTitle>("EntityTitles.sql", strRpl, sqlParams);
+            var bowSpc = CreateBowSpace();
+            bowSpc.Initialize(titles.Select(dt => dt.Title)); //count terms
+            return
+                bowSpc.Words.Select(w => new TermWeight() { Term = w.Stem, Weight = w.Freq, TermClass = "" })
+                      .OrderByDescending(wc => wc.Weight)
+                      .ThenBy(wc => wc.Term)
+                      .Take(maxNumTerms)
+                      .ToList();
+        }
+
+        private List<TermWeight> TagCloudEntities(string entity, DateTime from, DateTime to, int confidence, int maxNumTerms, int financialOnly)
+        {
+            StringReplacer strRpl = StringReplacerGetDefaultBasic();
+            var sqlParams = new object[] { entity, from, to, confidence, maxNumTerms, financialOnly };
+            List<SqlRow.EntityCountClasspath> entityCount =
+                DataProvider.GetDataWithReplace<SqlRow.EntityCountClasspath>("TagCloudEntityEntities.sql", strRpl, sqlParams);
+            return
+                entityCount.Select(
+                    wordCount =>
+                    new TermWeight()
+                        {
+                            Term = wordCount.Entity,
+                            Weight = wordCount.Count,
+                            TermClass = GetTermClass(wordCount.ClassPath)
+                        }).ToList();
+        }
+
+        private static string GetTermClass(string classHierarchy)
+        {
+            return (classHierarchy == null) ? "":
+                (classHierarchy.Contains("Geographical region")) ? "Geographical region":
+                    (classHierarchy.Contains("Protagonist")) ? "Protagonist":
+                        (classHierarchy.Contains("Finance")) ? "Finance":
+                            (classHierarchy.Contains("Organization")) ? "Organization":
+                                (classHierarchy.Contains("Company")) ? "Company" : 
+                                "";
+        }
+
+       
+        public static BowSpace CreateBowSpace()
+        {
+            // Get the stop words and stemmer for English.
+            IStemmer stemmer = new Lemmatizer(Language.English);
+            Set<string>.ReadOnly stopWords = StopWords.EnglishStopWords;
+
+            // Create a tokenizer.
+            UnicodeTokenizer tokenizer = new UnicodeTokenizer();
+            tokenizer.MinTokenLen = 4; // Each token must be at least X characters long.
+            tokenizer.Filter = TokenizerFilter.AlphanumLoose; // Tokens  can consist of alphabetic characters only.
+
+            // Create a bag-of-words space.
+            var bowSpc = new BowSpace();
+            bowSpc.Tokenizer = tokenizer; // Assign the tokenizer.
+            bowSpc.StopWords = stopWords; // Assign the stop words.
+            bowSpc.Stemmer = stemmer;     // Assign the stemmer.
+            bowSpc.MinWordFreq = 3;       // A term must appear at least X times in the corpus for it to be part of the vocabulary.
+            bowSpc.MaxNGramLen = 2;       // Terms consisting of at most X consecutive words will be considered.
+            bowSpc.WordWeightType = WordWeightType.TfIdf;
+            // Set the weighting scheme for the bag-of-words vectors to TF-IDF.
+            bowSpc.NormalizeVectors = true; // The TF-IDF vectors will be normalized?
+            bowSpc.CutLowWeightsPerc = 0.05; 
+            // The terms with the lowest weights, summing up to X% of the overall weight sum, will be removed from each TF-IDF vector.
+            return bowSpc;
+        }
+
         // ************ Helper functions *******************
 
         public StringReplacer StringReplacerGetDefaultBasic()
@@ -629,6 +728,8 @@ namespace NewsMonitorDAL
             strRpl.AddReplacement(string.Format("/*REM {0}*/", name), "--");
             return strRpl;
         }
+
+
     }
 
 }
