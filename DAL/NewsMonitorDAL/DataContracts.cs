@@ -135,8 +135,6 @@ namespace NewsMonitorDAL
         public string Term { get; set; }
         [DataMember(Order = 1)]
         public int Weight { get; set; }
-        [DataMember(Order = 2)]
-        public string TermClass { get; set; }
     }
 
 }

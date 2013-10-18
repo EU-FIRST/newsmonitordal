@@ -13,12 +13,7 @@
 
 --The actual select returned
 SELECT TOP (@maxNumTerms) e2.entity_label Entity, 
-                          Count(e2.entity_label)              Count, 
-                          ( Isnull(c1.class_label, '') + ' ' 
-                            + Isnull(c2.[class_label], '') + ' ' 
-                            + Isnull(c3.[class_label], '') + ' ' 
-                            + Isnull(c4.[class_label], '') + ' ' 
-                            + Isnull(c5.[class_label], '') ) ClassPath 
+                          sum(dec2.cnt)              Count
 FROM   document_entity_count dec 
        JOIN document_entity_count dec2 
          ON dec2.document_id = dec.document_id 
@@ -26,27 +21,12 @@ FROM   document_entity_count dec
        JOIN entity e1
 		 ON dec.entity_id = e1.id
 	   JOIN entity e2 
-         ON dec2.entity_id = e2.id 	   
-       JOIN class c1 
-         ON c1.id = e2.class_id 
-       LEFT JOIN class c2 
-              ON c1.parent_class_id = c2.id 
-       LEFT JOIN class c3 
-              ON c2.parent_class_id = c3.id 
-       LEFT JOIN class c4 
-              ON c3.parent_class_id = c4.id 
-       LEFT JOIN class c5 
-              ON c4.parent_class_id = c5.id 
+         ON dec2.entity_id = e2.id 	          
 WHERE  e1.entity_uri = @entity 
        AND dec.date >= @from
 	   AND dec.date <= @to
        AND dec.cnt >= @confidence
        AND dec2.cnt >= @confidence 
 	   AND (@isFinancial = 1 and d.is_financial = 1 or @isFinancial = 0)
-GROUP  BY e2.entity_label, 
-          c1.class_label, 
-          c2.class_label, 
-          c3.class_label, 
-          c4.class_label, 
-          c5.class_label 
+GROUP  BY e2.entity_label       
 ORDER  BY Count DESC 

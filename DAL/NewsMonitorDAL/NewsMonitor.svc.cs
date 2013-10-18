@@ -635,7 +635,7 @@ namespace NewsMonitorDAL
             var bowSpc = CreateBowSpace();
             bowSpc.Initialize(titles.Select(dt => dt.Title)); //count terms
             return
-                bowSpc.Words.Select(w => new TermWeight() { Term = w.Stem, Weight = w.Freq, TermClass = "" })
+                bowSpc.Words.Select(w => new TermWeight() { Term = w.Stem, Weight = w.Freq})
                       .OrderByDescending(wc => wc.Weight)
                       .ThenBy(wc => wc.Term)
                       .Take(maxNumTerms)
@@ -654,23 +654,10 @@ namespace NewsMonitorDAL
                     new TermWeight()
                         {
                             Term = wordCount.Entity,
-                            Weight = wordCount.Count,
-                            TermClass = GetTermClass(wordCount.ClassPath)
+                            Weight = wordCount.Count                            
                         }).ToList();
         }
 
-        private static string GetTermClass(string classHierarchy)
-        {
-            return (classHierarchy == null) ? "":
-                (classHierarchy.Contains("Geographical region")) ? "Geographical region":
-                    (classHierarchy.Contains("Protagonist")) ? "Protagonist":
-                        (classHierarchy.Contains("Finance")) ? "Finance":
-                            (classHierarchy.Contains("Organization")) ? "Organization":
-                                (classHierarchy.Contains("Company")) ? "Company" : 
-                                "";
-        }
-
-       
         public static BowSpace CreateBowSpace()
         {
             // Get the stop words and stemmer for English.
@@ -688,7 +675,7 @@ namespace NewsMonitorDAL
             bowSpc.StopWords = stopWords; // Assign the stop words.
             bowSpc.Stemmer = stemmer;     // Assign the stemmer.
             bowSpc.MinWordFreq = 3;       // A term must appear at least X times in the corpus for it to be part of the vocabulary.
-            bowSpc.MaxNGramLen = 2;       // Terms consisting of at most X consecutive words will be considered.
+            bowSpc.MaxNGramLen = 1;       // Terms consisting of at most X consecutive words will be considered.
             bowSpc.WordWeightType = WordWeightType.TfIdf;
             // Set the weighting scheme for the bag-of-words vectors to TF-IDF.
             bowSpc.NormalizeVectors = true; // The TF-IDF vectors will be normalized?
