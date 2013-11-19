@@ -3,6 +3,18 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
+        <ConnectionNode Name="95.87.154.26:DevUser_semantic_annotation">
+          <Created>2013-11-17T10:49:35.6944156+01:00</Created>
+          <Type>SQL</Type>
+          <Server>95.87.154.26</Server>
+          <UserName>DevUser_semantic_annotation</UserName>
+          <Authentication>SQL</Authentication>
+          <InitialDB>semantic_annotation_live</InitialDB>
+          <LoginTimeout>15</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
         <ConnectionNode Name="HAWK:Hawk\Matjaz">
           <Created>2013-06-22T07:22:41.8666759+02:00</Created>
           <Type>SQL</Type>
@@ -19,6 +31,12 @@
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
+        <FileNode Name="DayDocument.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:95.87.154.26:False:DevUser_semantic_annotation</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>95.87.154.26</AssociatedConnSrvName>
+          <AssociatedConnUserName>DevUser_semantic_annotation</AssociatedConnUserName>
+          <FullPath>DayDocument.sql</FullPath>
+        </FileNode>
         <FileNode Name="DayPumpDump.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:HAWK:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>HAWK</AssociatedConnSrvName>

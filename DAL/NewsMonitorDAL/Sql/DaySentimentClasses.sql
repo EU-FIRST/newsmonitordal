@@ -28,7 +28,7 @@ SELECT [Date]                                AS [Date],
                                 CAST(NULLIF(SUM(BS.positives + BS.negatives), 0) AS FLOAT)
                             ,0
                        ) AS [Index]
-                  FROM block_sentiment BS
+                  FROM document_sentiment BS
                        LEFT JOIN occurrence O
                 	          ON BS.document_id = O.document_id
                        INNER JOIN entity E

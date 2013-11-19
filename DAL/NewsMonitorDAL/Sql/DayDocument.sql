@@ -16,7 +16,7 @@ IF (@normalize = 1) BEGIN
 	SELECT @toNormalize = MIN(O.[date])
 	  FROM entity E
            INNER JOIN occurrence O
-                   ON O.entity_id = E.id
+                   ON O.entity_id = E.id 
 	 WHERE E.entity_uri = @entity
 
 	SELECT @sentStDev = COALESCE(STDEV(IndexByDays.[Index]), 1)
@@ -26,7 +26,7 @@ IF (@normalize = 1) BEGIN
         					CAST(NULLIF(SUM(BS.positives + BS.negatives), 0) AS FLOAT)
         				,0
         			) AS [Index] -- if (BS.positives + BS.negatives == 0) returns 0
-			  FROM block_sentiment BS
+			  FROM document_sentiment BS
 				   LEFT JOIN occurrence O
         				  ON BS.document_id = O.document_id
                    INNER JOIN entity E
@@ -55,7 +55,7 @@ SELECT O.[date] AS [Date],
         )/
         (@sentStDevMod*@sentStDev)
 		AS [Index] -- if (BS.positives + BS.negatives == 0) returns 0
-  FROM block_sentiment BS
+  FROM document_sentiment BS
        LEFT JOIN occurrence O
 	          ON BS.document_id = O.document_id
        INNER JOIN entity E
